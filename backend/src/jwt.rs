@@ -8,8 +8,9 @@ pub const JWT_COOKIE_NAME: &'static str = "jwt";
 
 pub struct Jwt {
     pub sub: String,
-    pub iat: chrono::DateTime<chrono::Utc>,
-    pub exp: chrono::DateTime<chrono::Utc>,
+    pub iat: i64,
+    pub exp: i64,
+    pub email: String,
 }
 
 impl Jwt {
@@ -22,6 +23,7 @@ impl Jwt {
         claims.insert("sub", self.sub.clone());
         claims.insert("iat", self.iat.to_string());
         claims.insert("exp", self.exp.to_string());
+        claims.insert("email", self.email.to_string());
 
         let token_str = claims.sign_with_key(&key).context("Failed to sign JWT")?;
         Ok(token_str)

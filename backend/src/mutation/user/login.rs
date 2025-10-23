@@ -56,7 +56,7 @@ impl MutationHandler for LoginInput {
 
         let now = chrono::Utc::now();
         let exp = match now.checked_add_signed(Duration::days(1)) {
-            Some(x) => x,
+            Some(x) => x.timestamp(),
             None => {
                 return Err(async_graphql::Error::new(
                     "Failed to generate JWT expiration time.",
@@ -65,15 +65,16 @@ impl MutationHandler for LoginInput {
         };
         let jwt = Jwt {
             sub: user.id.unwrap().to_string(),
-            iat: now,
+            iat: now.timestamp(),
             exp,
+            email: user.email,
         };
 
         let cookie = Cookie::build((JWT_COOKIE_NAME, jwt.sign()?))
             .path("/")
             .http_only(true)
             .secure(true)
-            .expires(OffsetDateTime::from_unix_timestamp(exp.timestamp())?)
+            .expires(OffsetDateTime::from_unix_timestamp(exp)?)
             .build();
         if let Some(sender) = ctx.data_opt::<Sender<Cookie>>() {
             let _ = sender.send(cookie).await;
