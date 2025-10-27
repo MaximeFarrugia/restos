@@ -1,6 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { Button } from '$lib/components/ui/button'
+
+  const { data } = $props()
 </script>
 
 <header
@@ -10,6 +12,10 @@
     <h1>Rest OS</h1>
   </div>
   <div>
-    <Button onclick={() => goto('/login')}>Log in</Button>
+    {#if data.loggedIn}
+      <Button onclick={() => goto('/dashboard')}>Dashboard</Button>
+    {:else}
+      <Button onclick={() => goto('/login')}>Log in</Button>
+    {/if}
   </div>
 </header>

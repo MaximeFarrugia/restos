@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
+  import { page } from '$app/state'
   import FieldInfo from '$lib/components/field-info.svelte'
   import PasswordInput from '$lib/components/password-input.svelte'
   import { Button } from '$lib/components/ui/button'
@@ -28,6 +29,8 @@
     | OperationResultState<LoginMutationMutation, { input: LoginInput }>
     | undefined = $state()
 
+  const redirectTo = page.url.searchParams.get('redirectTo')
+
   const form = createForm(() => ({
     defaultValues: {
       email: '',
@@ -45,7 +48,7 @@
         if (r.error) {
           toast.error(r.error.message)
         } else if (r.data?.login.success) {
-          goto('/dashboard')
+          goto(redirectTo || '/dashboard')
         }
       })
     },
